@@ -1,0 +1,7 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env*.local
+frame_images/
+ascii_frames_*/

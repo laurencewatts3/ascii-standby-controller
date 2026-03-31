@@ -1,0 +1,326 @@
+/* ============================================
+   ASCII STANDBY CONTROLLER
+   OLED-safe fullscreen landscape display
+   ============================================ */
+
+/* --- Reset & Base --- */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #050505;
+  --text-primary: #d4d4d4;
+  --text-secondary: #666666;
+  --text-dim: #3a3a3a;
+  --font-mono: "IBM Plex Mono", "SF Mono", "Fira Code", monospace;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent text selection on touch */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Prevent iOS zoom on double-tap */
+  touch-action: manipulation;
+}
+
+/* --- Player Layout --- */
+
+.player {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg);
+}
+
+.player-ascii {
+  flex: 1 1 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.player-info {
+  flex: 1 1 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px 24px 12px;
+}
+
+.player-info-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  max-width: 100%;
+}
+
+/* --- ASCII Animation --- */
+
+.ascii-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ascii-frame-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.ascii-frame {
+  font-family: var(--font-mono);
+  font-size: 6.5px;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  white-space: pre;
+  display: block;
+}
+
+.ascii-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: color-dodge;
+  transition: background 1.2s ease-in-out;
+  border-radius: 50%;
+}
+
+.ascii-loading {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+}
+
+/* --- Now Playing --- */
+
+.now-playing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.now-playing-track {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  /* Truncate long names */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.now-playing-artist {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.now-playing-album {
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  margin-top: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Controls --- */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: breathe 20s ease-in-out infinite;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.control-btn:active {
+  color: var(--text-primary);
+}
+
+.control-btn-main {
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.control-btn-main:active {
+  color: #ffffff;
+}
+
+/* Breathe animation: scale 1.00 to 1.02 over ~20s cycle */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* --- Login Screen --- */
+
+.login-screen {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.login-title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  letter-spacing: 0.2em;
+}
+
+.login-btn {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--bg);
+  background: var(--text-primary);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.login-btn:active {
+  opacity: 0.8;
+}
+
+.login-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+}
+
+/* --- Responsive: tighter on small screens --- */
+
+@media (max-height: 420px) {
+  .player-ascii {
+    padding: 8px;
+  }
+
+  .player-info {
+    padding: 16px 20px 16px 8px;
+  }
+
+  .player-info-inner {
+    gap: 20px;
+  }
+
+  .now-playing-track {
+    font-size: 15px;
+  }
+
+  .now-playing-artist {
+    font-size: 12px;
+  }
+
+  .now-playing-album {
+    font-size: 10px;
+  }
+
+  .ascii-frame {
+    font-size: 5px;
+  }
+
+  .controls {
+    gap: 18px;
+  }
+
+  .control-btn {
+    font-size: 16px;
+    padding: 6px;
+  }
+
+  .control-btn-main {
+    font-size: 20px;
+  }
+}
+
+/* Ultra-small (iPhone SE landscape) */
+@media (max-height: 380px) {
+  .ascii-frame {
+    font-size: 4.5px;
+  }
+
+  .now-playing-track {
+    font-size: 14px;
+  }
+
+  .player-info-inner {
+    gap: 14px;
+  }
+}
